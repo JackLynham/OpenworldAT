@@ -15,11 +15,8 @@ public class LoadingTiles : MonoBehaviour
     [SerializeField]
     private int maxDist;
 
-    private GameObject testObj;
+    public List<GameObject> Hobonobru = new List<GameObject>();
 
-    public List <GameObject> Hobonobru = new List<GameObject>();
-    public int ChunkNum;
-    
     void Start()
     {
         for (int i = 0; i < 5; i++)
@@ -28,60 +25,19 @@ public class LoadingTiles : MonoBehaviour
             Hobonobru.Add((GameObject)Instantiate(prefab));
         }
         Debug.Log(Hobonobru.Count);
-      // UnloadChunks();
     }
 
     void UnloadChunks()
     {
-
         Vector3 playerPos = this.gameObject.transform.position;
-        //foreach (GameObject tile in Hobonobru)
-
-        //{
-
-        //    Vector3 tilePos = tile.gameObject.transform.position
-        //        + (tileSize / 2f);  //Want to find the midpoint of the tile not edge                     
-
-        //    float xDist = Mathf.Abs(tilePos.x - playerPos.x);
-        //    float zDist = Mathf.Abs(tilePos.z - playerPos.z);
-
-        //    // We dont want all tiles to be used so if Above the max dist is disabled. 
-        //    if (xDist + zDist > maxDist)
-        //    {
-        //        if (prefab.gameObject.tag == "chunks")
-        //        {
-        //            Hobonobru.Remove(tile);
-
-        //        }
-
-        //    }
-        //    else
-        //    {
-        //        // tile.SetActive(true);
-        //    }
-        //}
-
-        for (int i = 0; i <= Hobonobru.Count; i++)
+        for (int i = 0; i < Hobonobru.Count; i++)
         {
             Vector3 tilePos = Hobonobru[i].gameObject.transform.position
                    + (tileSize / 2f);  //Want to find the midpoint of the tile not edge                     
-
-            float xDist = Mathf.Abs(tilePos.x - playerPos.x);
-            float zDist = Mathf.Abs(tilePos.z - playerPos.z);
-
-            // We dont want all tiles to be used so if Above the max dist is disabled. 
-            if (xDist + zDist > maxDist)
+            if (Vector3.Distance(tilePos, playerPos) >= maxDist)
             {
-                if (prefab.gameObject.tag == "chunks")
-                {
-                    Hobonobru.Remove(Hobonobru[i]);
-
-                }
-
-            }
-            else
-            {
-                // tile.SetActive(true);
+                Destroy(Hobonobru[i]);
+                Hobonobru.RemoveAt(i);
             }
         }
 
@@ -89,16 +45,6 @@ public class LoadingTiles : MonoBehaviour
 
     private void Update()
     {
-    
-          UnloadChunks();
-        //Vector3 playerPos = this.gameObject.transform.position;
-        //Vector3 tilePos = testObj.gameObject.transform.position;
-
-        //float maxDist = Vector3.Distance(other.position, transform.position);
-        //{
-
-        //}
-
-       
+        UnloadChunks();
     }
 }

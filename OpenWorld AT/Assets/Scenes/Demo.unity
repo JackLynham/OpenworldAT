@@ -989,6 +989,7 @@ MonoBehaviour:
   tileTag: chunks
   tileSize: {x: 25, y: 0, z: 25}
   maxDist: 25
+  Hobonobru: []
 --- !u!4 &1072871594
 Transform:
   m_ObjectHideFlags: 0
