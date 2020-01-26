@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class LoadingTiles : MonoBehaviour
 {
     public GameObject prefab;
@@ -15,29 +16,28 @@ public class LoadingTiles : MonoBehaviour
     [SerializeField]
     private int maxDist;
 
-    public List<GameObject> Hobonobru = new List<GameObject>();
+    public List<GameObject> tileList = new List<GameObject>();
 
     void Start()
     {
         for (int i = 0; i < 5; i++)
         {
-            Debug.Log(i);
-            Hobonobru.Add((GameObject)Instantiate(prefab));
+            tileList.Add((GameObject)Instantiate(prefab));
         }
-        Debug.Log(Hobonobru.Count);
+        Debug.Log(tileList.Count);
     }
 
     void UnloadChunks()
     {
         Vector3 playerPos = this.gameObject.transform.position;
-        for (int i = 0; i < Hobonobru.Count; i++)
+        for (int i = 0; i < tileList.Count; i++)
         {
-            Vector3 tilePos = Hobonobru[i].gameObject.transform.position
+            Vector3 tilePos = tileList[i].gameObject.transform.position
                    + (tileSize / 2f);  //Want to find the midpoint of the tile not edge                     
             if (Vector3.Distance(tilePos, playerPos) >= maxDist)
             {
-                Destroy(Hobonobru[i]);
-                Hobonobru.RemoveAt(i);
+                Destroy(tileList[i]);
+                tileList.RemoveAt(i);
             }
         }
 
