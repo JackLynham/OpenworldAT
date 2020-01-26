@@ -242,6 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 4186009993842070242, guid: f7c93eed958f5764696e61fb8e039ec5, type: 3}
+  prefab2: {fileID: 751668395202888954, guid: b2edec42b9ef37f46aef0a8426d2b400, type: 3}
   tileTag: chunks
   tileSize: {x: 20, y: 0, z: 20}
   maxDist: 50
