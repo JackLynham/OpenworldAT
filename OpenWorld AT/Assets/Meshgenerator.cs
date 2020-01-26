@@ -61,6 +61,7 @@ public class Meshgenerator : MonoBehaviour
                 
             }
                 vert++;
+          
         }
        
      
@@ -72,7 +73,8 @@ public class Meshgenerator : MonoBehaviour
         mesh.vertices = verticies;
         mesh.triangles = triangles;
 
-        mesh.RecalculateNormals(); //Fixes Lighting on the Mesh
+        mesh.RecalculateNormals(); //Fixes Lighting on the Mesh  
+                                            
     }
 
     

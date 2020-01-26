@@ -16,14 +16,30 @@ public class LoadingTiles : MonoBehaviour
     [SerializeField]
     private int maxDist;
 
+    float postion;
     public List<GameObject> tileList = new List<GameObject>();
+    private List<Vector3> postionsList = new List<Vector3>();
 
+    public Meshgenerator mesh;
     void Start()
     {
-        for (int i = 0; i < 5; i++)
+        prefab.transform.position = new Vector3(0, 0, 0);
+        for (int i = 0; i < 16; i++)
         {
+            prefab.transform.position += new Vector3(0+ mesh.xSize, 0, 0);
+
+            if (i == 4 || i == 8 || i == 12)
+            {
+                prefab.transform.position += new Vector3(0 - mesh.xSize*4, 0, +mesh.zSize);
+
+            }
+
             tileList.Add((GameObject)Instantiate(prefab));
+          //  SaveData();
+          
         }
+
+
         Debug.Log(tileList.Count);
     }
 
@@ -39,6 +55,14 @@ public class LoadingTiles : MonoBehaviour
                 Destroy(tileList[i]);
                 tileList.RemoveAt(i);
             }
+
+            //if (Vector3.Distance(tilePos, playerPos) <= maxDist && !prefab.activeInHierarchy)
+            //{
+                
+            //    tileList.Add((GameObject)Instantiate(prefab));
+            //    prefab.transform.position = postionsList[0];
+            //    postionsList.Remove(postionsList[0]);
+            //}
         }
 
     }
@@ -46,5 +70,21 @@ public class LoadingTiles : MonoBehaviour
     private void Update()
     {
         UnloadChunks();
+        //LoadData();
     }
+
+    //void SaveData()
+    //{
+    //   Vector3 test = prefab.transform.position;
+    //    postionsList.Add(test);
+    //}
+
+    //void LoadData()
+    //{
+
+    //}
+
+
+
+
 }
