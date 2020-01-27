@@ -10,6 +10,7 @@ public class Meshgenerator : MonoBehaviour
     int[] triangles;
 
     public ChunkVals Cvals;
+    public LoadingTiles player;
 
  
     private void Start()
@@ -23,7 +24,7 @@ public class Meshgenerator : MonoBehaviour
 
     private void Update()
     {
-        
+       
     }
 
     void CreateShape()
@@ -78,5 +79,13 @@ public class Meshgenerator : MonoBehaviour
                                             
     }
 
-    
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            
+            player.currentChunkID = Cvals.chunkID;
+        }
+    }
+
 }

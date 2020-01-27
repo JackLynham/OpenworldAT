@@ -9,10 +9,15 @@ public class ChunkVals : MonoBehaviour
     public int chunkID = 0;
     public int mapHeight = 4;
     public int mapWidth = 4;
-    public int currentChunkID;
+
 
     private void Awake()
     {
        
+    }
+
+   public void TestFuction()
+    {
+        chunkID++;
     }
 }
