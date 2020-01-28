@@ -193,7 +193,7 @@ Transform:
   m_GameObject: {fileID: 181558388}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 100, y: 1, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -241,9 +241,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0a4078f87714cc4fad5deb4099260c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 10
-  mapHeight: 10
-  noiseScale: 0.3
+  drawmode: 1
+  mapWidth: 100
+  mapHeight: 100
+  noiseScale: 25
+  octaves: 5
+  persistance: 0.5
+  Lacunarity: 2
+  seed: 69
+  offset: {x: 0, y: 0}
+  Regions:
+  - height: 0.3
+    name: Ocean
+    color: {r: 0.021537915, g: 0.027989745, b: 0.41509432, a: 0}
+  - height: 0.4
+    name: Sea
+    color: {r: 0, g: 0.4036785, b: 0.7169812, a: 0}
+  - height: 0.45
+    name: Sand
+    color: {r: 0.90751445, g: 1, b: 0, a: 0}
+  - height: 0.55
+    name: Low land
+    color: {r: 0.09807763, g: 0.6156863, b: 0.10125146, a: 0}
+  - height: 0.6
+    name: Land
+    color: {r: 0.06695961, g: 0.34901962, b: 0.027233893, a: 0}
+  - height: 0.7
+    name: Rock
+    color: {r: 0.3773585, g: 0.3145733, b: 0.20469919, a: 0}
+  - height: 0.9
+    name: Mountains
+    color: {r: 0.16037738, g: 0.097249955, b: 0.041607343, a: 0}
+  - height: 1
+    name: Snow
+    color: {r: 1, g: 1, b: 1, a: 0}
   update: 1
 --- !u!4 &1132507497
 Transform:
