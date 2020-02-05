@@ -32,6 +32,8 @@ public class MapGenerator : MonoBehaviour
 
     Queue<MapThreadInfo<Mapdata>> mapThreads = new Queue<MapThreadInfo<Mapdata>>();
 
+    Queue<MapThreadInfo<MeshData>> meshThreads = new Queue<MapThreadInfo<MeshData>>();
+
     public void DrawMapEditor()
     {
         Mapdata mapdata = GenerateMap();
@@ -72,6 +74,26 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
+
+    public void RequestMeshData(Mapdata mapdata, Action<MeshData> callback)
+    {
+        ThreadStart threadStart = delegate
+        {
+            MeshDatathread(mapdata, callback);
+        };
+    }
+
+    void MeshDatathread(Mapdata mapdata, Action<MeshData> callback)
+    {
+
+        MeshData mesh = MeshGen.GenerateTerrainMesh(mapdata.heightMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail);
+        lock(meshThreads)
+        {
+            meshThreads.Enqueue(new MapThreadInfo<MeshData>(callback, mesh));
+        }
+    }
+
+
     private void Update()
     {
         if(mapThreads.Count >0)
@@ -82,6 +104,17 @@ public class MapGenerator : MonoBehaviour
                 threadInfo.callback(threadInfo.paramater);
             }
         }
+
+        if(meshThreads.Count > 0)
+        {
+            for (int i = 0; i < meshThreads.Count; i++)
+            {
+                MapThreadInfo<MeshData> threadInfo = meshThreads.Dequeue();
+                threadInfo.callback(threadInfo.paramater);
+            }
+        }
+
+
     }
 
 
