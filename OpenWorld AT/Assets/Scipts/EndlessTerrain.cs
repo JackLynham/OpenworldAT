@@ -8,17 +8,21 @@ public class EndlessTerrain : MonoBehaviour
     public const float maxViewDst = 450;
     public Transform viewer;
 
+    static MapGenerator mapGenerator;
     public static Vector2 viewerPosition;
     int chunkSize;
-    int chunksVisibleInViewDst;
+    int chunksVisible;
 
-    Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
-    List<TerrainChunk> terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
+ 
+
+    Dictionary<Vector2, TerrainChunk> ChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
+    List<TerrainChunk> terrainChunksVisible = new List<TerrainChunk>();
 
     void Start()
     {
         chunkSize = MapGenerator.mapChunkSize - 1;
-        chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
+        chunksVisible = Mathf.RoundToInt(maxViewDst / chunkSize);
+        mapGenerator = FindObjectOfType<MapGenerator>();
     }
 
     void Update()
@@ -30,32 +34,33 @@ public class EndlessTerrain : MonoBehaviour
     void UpdateVisibleChunks()
     {
 
-        for (int i = 0; i < terrainChunksVisibleLastUpdate.Count; i++)
+        for (int i = 0; i < terrainChunksVisible.Count; i++)
         {
-            terrainChunksVisibleLastUpdate[i].SetVisible(false);
+            terrainChunksVisible[i].SetVisible(false);
         }
-        terrainChunksVisibleLastUpdate.Clear();
 
-        int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
-        int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
+        terrainChunksVisible.Clear();
 
-        for (int yOffset = -chunksVisibleInViewDst; yOffset <= chunksVisibleInViewDst; yOffset++)
+        int currentChunkX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
+        int currentChunkY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
+
+        for (int yOffset = -chunksVisible; yOffset <= chunksVisible; yOffset++)
         {
-            for (int xOffset = -chunksVisibleInViewDst; xOffset <= chunksVisibleInViewDst; xOffset++)
+            for (int xOffset = -chunksVisible; xOffset <= chunksVisible; xOffset++)
             {
-                Vector2 viewedChunkCoord = new Vector2(currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
+                Vector2 viewedChunkCoord = new Vector2(currentChunkX + xOffset, currentChunkY + yOffset);
 
-                if (terrainChunkDictionary.ContainsKey(viewedChunkCoord))
+                if (ChunkDictionary.ContainsKey(viewedChunkCoord))
                 {
-                    terrainChunkDictionary[viewedChunkCoord].UpdateTerrainChunk();
-                    if (terrainChunkDictionary[viewedChunkCoord].IsVisible())
+                    ChunkDictionary[viewedChunkCoord].UpdateTerrainChunk();
+                    if (ChunkDictionary[viewedChunkCoord].IsVisible())
                     {
-                        terrainChunksVisibleLastUpdate.Add(terrainChunkDictionary[viewedChunkCoord]);
+                        terrainChunksVisible.Add(ChunkDictionary[viewedChunkCoord]);
                     }
                 }
                 else
                 {
-                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, transform));
+                    ChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, transform));
                 }
 
             }
@@ -81,7 +86,15 @@ public class EndlessTerrain : MonoBehaviour
             meshObject.transform.localScale = Vector3.one * size / 10f;
             meshObject.transform.parent = parent;
             SetVisible(false);
+
+            mapGenerator.RequestMapData(onMapDataRecived);
         }
+
+        void onMapDataRecived(Mapdata mapdata)
+        {
+            print("Map Data Recived ");
+        }
+
 
         public void UpdateTerrainChunk()
         {
