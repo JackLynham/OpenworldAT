@@ -1,50 +1,47 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class MapGenerator : MonoBehaviour
 {
 
-    public enum Drawmode {NoiseMap , ColourMap, Mesh};
-    public Drawmode drawmode;
-    public int mapWidth;
-    public int mapHeight;
+    public enum DrawMode { NoiseMap, ColourMap, Mesh };
+    public DrawMode drawMode;
+
+   public const int mapChunkSize = 241;
+    [Range(0, 6)]
+    public int levelOfDetail;
     public float noiseScale;
 
     public int octaves;
-
-    [Range(0,1)]
+    [Range(0, 1)]
     public float persistance;
-    public float Lacunarity;
+    public float lacunarity;
 
     public int seed;
     public Vector2 offset;
 
-    public float meshHeightMulti;
+    public float meshHeightMultiplier;
     public AnimationCurve meshHeightCurve;
 
-    public TerainType[] Regions;
-    public bool update;
+    public bool autoUpdate;
 
- 
+    public TerrainType[] regions;
 
     public void GenerateMap()
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed,
-            noiseScale,octaves, persistance, Lacunarity, offset);
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, offset);
 
-        Color[] colourMap = new Color[mapWidth * mapHeight];
-
-        for (int y = 0; y < mapHeight; y++)
+        Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
+        for (int y = 0; y < mapChunkSize; y++)
         {
-            for (int x = 0; x < mapWidth; x++)
+            for (int x = 0; x < mapChunkSize; x++)
             {
-                float currentheight = noiseMap[x, y];
-                for (int i = 0; i < Regions.Length; i++)
+                float currentHeight = noiseMap[x, y];
+                for (int i = 0; i < regions.Length; i++)
                 {
-                    if(currentheight<= Regions[i].height)
+                    if (currentHeight <= regions[i].height)
                     {
-                        colourMap[y * mapWidth + x] = Regions[i].color;
+                        colourMap[y * mapChunkSize + x] = regions[i].colour;
                         break;
                     }
                 }
@@ -52,51 +49,37 @@ public class MapGenerator : MonoBehaviour
         }
 
         MapDisplay display = FindObjectOfType<MapDisplay>();
-
-        if(drawmode == Drawmode.NoiseMap)
+        if (drawMode == DrawMode.NoiseMap)
         {
-            display.DrawTexture(TextureGenerator.textureHeightMap(noiseMap));
+            display.DrawTexture(TextureGenerator.TextureFromHeightMap(noiseMap));
         }
-        else if (drawmode == Drawmode.ColourMap)
+        else if (drawMode == DrawMode.ColourMap)
         {
-            display.DrawTexture(TextureGenerator.TextureColorMap
-                (colourMap, mapWidth,mapHeight));
+            display.DrawTexture(TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
         }
-        else if (drawmode == Drawmode.Mesh)
+        else if (drawMode == DrawMode.Mesh)
         {
-           display.DrawMesh(MeshGen.GenerateTerrainMesh(noiseMap, meshHeightMulti,
-               meshHeightCurve), TextureGenerator.TextureColorMap (colourMap, mapWidth, mapHeight));
+            display.DrawMesh(MeshGen.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.TextureFromColourMap(colourMap, mapChunkSize, mapChunkSize));
         }
-
     }
 
-
-    private void OnValidate()
+    void OnValidate()
     {
-        if(mapWidth < 1)
+        if (lacunarity < 1)
         {
-            mapWidth = 1;
+            lacunarity = 1;
         }
-        if(mapHeight < 1)
+        if (octaves < 0)
         {
-            mapHeight = 1;
+            octaves = 0;
         }
-
-        if (Lacunarity < 1)
-        {
-            Lacunarity = 1;
-        }
-        if(octaves < 0)
-        {
-            Lacunarity = 0;
-        }
-
     }
-    [System.Serializable]
-    public struct TerainType
-    {
-        public float height;
-        public string name;
-        public Color color;
-    }
+}
+
+[System.Serializable]
+public struct TerrainType
+{
+    public string name;
+    public float height;
+    public Color colour;
 }

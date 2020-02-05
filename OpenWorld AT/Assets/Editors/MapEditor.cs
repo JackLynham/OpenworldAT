@@ -14,7 +14,7 @@ public class MapEditor : Editor
 
        if (DrawDefaultInspector())
         {
-            if(mapGen.update)
+            if(mapGen.autoUpdate)
             {
                 mapGen.GenerateMap();
             }
