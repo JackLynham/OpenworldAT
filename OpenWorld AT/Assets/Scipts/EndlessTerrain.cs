@@ -84,7 +84,7 @@ public class EndlessTerrain : MonoBehaviour
                 if (terrainChunkDictionary.ContainsKey(viewedChunk))
                 {
                     terrainChunkDictionary[viewedChunk].UpdateTerrainChunk();
-                    if (terrainChunkDictionary[viewedChunk].IsVisible())
+                    if (terrainChunkDictionary[viewedChunk].IsVisible()) ;
                     {
                         terrainChunksVisible.Add(terrainChunkDictionary[viewedChunk]);
                     }
@@ -159,14 +159,14 @@ public class EndlessTerrain : MonoBehaviour
 
         public void SetVisible(bool visible)
         {
-            if(!visible)
-            {
-                NotVisible();
-            }
-            else if (visible)
-            {
+            //if(!visible)
+            //{
+            //    NotVisible();
+            //}
+            //else if (visible)
+            //{
                
-            }
+            //}
         }
 
         public bool IsVisible()
@@ -176,11 +176,11 @@ public class EndlessTerrain : MonoBehaviour
 
             
         }
-        public void NotVisible()
-        {
-             //Destroy(meshObject);
+        //public void NotVisible()
+        //{
+        //     Destroy(meshObject);
             
-        }
+        //}
 
 
     }
