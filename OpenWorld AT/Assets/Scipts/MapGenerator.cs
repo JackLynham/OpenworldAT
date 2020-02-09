@@ -11,11 +11,12 @@ public class MapGenerator : MonoBehaviour
     public DrawMode drawMode;
 
     public const int mapChunkSize = 241;
+
     [Range(0, 6)]
     public int levelOfDetail;
     public float noiseScale;
-
     public int octaves;
+
     [Range(0, 1)]
     public float persistance;
     public float lacunarity;
@@ -33,7 +34,7 @@ public class MapGenerator : MonoBehaviour
     Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
     Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
 
-    public void DrawMapInEditor()
+    public void DrawMapInEditor() /*Editor Values For map Gen */
     {
         MapData mapData = GenerateMapData();
 
@@ -48,7 +49,8 @@ public class MapGenerator : MonoBehaviour
         }
         else if (drawMode == DrawMode.Mesh)
         {
-            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.TextureFromColourMap(mapData.colourMap, mapChunkSize, mapChunkSize));
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), 
+                TextureGenerator.TextureFromColourMap(mapData.colourMap, mapChunkSize, mapChunkSize));
         }
     }
 

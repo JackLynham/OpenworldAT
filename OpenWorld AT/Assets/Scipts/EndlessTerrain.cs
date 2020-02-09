@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+
 public class EndlessTerrain : MonoBehaviour
 {
 
@@ -9,61 +10,96 @@ public class EndlessTerrain : MonoBehaviour
     public Transform viewer;
     public Material mapMaterial;
 
-    public static Vector2 viewerPosition;
+    public static Vector2 viewerPos;
     static MapGenerator mapGenerator;
-    int chunkSize;
-    int chunksVisibleInViewDst;
+    public int chunkSize;
+    int chunksVisible;
+
+    public int chunkID;
+    public int currentChunkX;
+    public int currentChunkY;
+    public  Vector2 viewedChunk;
+    public int xOffset;
+    public int yOffset;
+
+    public TerrainChunk terrainChunk;
 
     Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
-    List<TerrainChunk> terrainChunksVisibleLastUpdate = new List<TerrainChunk>();
+    List<TerrainChunk> terrainChunksVisible = new List<TerrainChunk>();
 
-    void Start()
+    void Start()  /*Find the Map make Sure chunk size is not to Big, Calculate Chunk visibliity */
     {
         mapGenerator = FindObjectOfType<MapGenerator>();
         chunkSize = MapGenerator.mapChunkSize - 1;
-        chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
+        chunksVisible = Mathf.RoundToInt(maxViewDst / chunkSize);
     }
 
-    void Update()
+    void Update() /*Update the Viewers /Players Position */
     {
-        viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
+        viewerPos = new Vector2(viewer.position.x, viewer.position.z);
         UpdateVisibleChunks();
+      
     }
 
-    void UpdateVisibleChunks()
+   public void SaveData()
+    {
+        SaveSystem.SaveData(this);
+    }
+
+    public void LoadPlayer ()
+    {
+        DataManager data = SaveSystem.LoadData();
+
+        viewedChunk.x = data.coord[0];
+        viewedChunk.y = data.coord[1];
+
+        chunkSize = data.size;
+        chunkID = data.ID;
+    }
+
+    void UpdateVisibleChunks() /*If the Chunk Isnt visible set it to false */
     {
 
-        for (int i = 0; i < terrainChunksVisibleLastUpdate.Count; i++)
+        for (int i = 0; i < terrainChunksVisible.Count; i++)
         {
-            terrainChunksVisibleLastUpdate[i].SetVisible(false);
+            terrainChunksVisible[i].SetVisible(false);
+            SaveData();
+            
         }
-        terrainChunksVisibleLastUpdate.Clear();
 
-        int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
-        int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
+        terrainChunksVisible.Clear();
+        
+        /* Works out What chunk the player is in X and Y*/
+         currentChunkX = Mathf.RoundToInt(viewerPos.x / chunkSize);
+         currentChunkY = Mathf.RoundToInt(viewerPos.y / chunkSize);
 
-        for (int yOffset = -chunksVisibleInViewDst; yOffset <= chunksVisibleInViewDst; yOffset++)
+        for ( yOffset = -chunksVisible; yOffset <= chunksVisible; yOffset++)
         {
-            for (int xOffset = -chunksVisibleInViewDst; xOffset <= chunksVisibleInViewDst; xOffset++)
+            for ( xOffset = -chunksVisible; xOffset <= chunksVisible; xOffset++)
             {
-                Vector2 viewedChunkCoord = new Vector2(currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
-
-                if (terrainChunkDictionary.ContainsKey(viewedChunkCoord))
+                /* Determined whats chunk is being seen, if the chunk is inside the list call update chunks to update all chunks #
+                 add viewed chunk to dictionairy , else add a new chunk to the list.*/
+                 viewedChunk = new Vector2(currentChunkX/* + xOffset*/, currentChunkY /*+ yOffset*/);
+                
+                if (terrainChunkDictionary.ContainsKey(viewedChunk))
                 {
-                    terrainChunkDictionary[viewedChunkCoord].UpdateTerrainChunk();
-                    if (terrainChunkDictionary[viewedChunkCoord].IsVisible())
+                    terrainChunkDictionary[viewedChunk].UpdateTerrainChunk();
+                    if (terrainChunkDictionary[viewedChunk].IsVisible())
                     {
-                        terrainChunksVisibleLastUpdate.Add(terrainChunkDictionary[viewedChunkCoord]);
+                        terrainChunksVisible.Add(terrainChunkDictionary[viewedChunk]);
                     }
                 }
                 else
                 {
-                    terrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(viewedChunkCoord, chunkSize, transform, mapMaterial));
+                    chunkID++;
+                    terrainChunkDictionary.Add(viewedChunk, new TerrainChunk(viewedChunk, chunkSize, transform, mapMaterial , chunkID));
+                    
                 }
 
             }
         }
     }
+
 
     public class TerrainChunk
     {
@@ -71,25 +107,32 @@ public class EndlessTerrain : MonoBehaviour
         GameObject meshObject;
         Vector2 position;
         Bounds bounds;
-
         MeshRenderer meshRenderer;
         MeshFilter meshFilter;
+       public bool visible;
+
+        //string filePath;
+        //string jsonString;
 
 
-        public TerrainChunk(Vector2 coord, int size, Transform parent, Material material)
+        public TerrainChunk(Vector2 coord, int size, Transform parent, Material material,  int chunkID)
         {
+            
             position = coord * size;
             bounds = new Bounds(position, Vector2.one * size);
             Vector3 positionV3 = new Vector3(position.x, 0, position.y);
 
+            //filePath = Application.streamingAssetsPath + "/ChunkData.json";//jsonString = File.ReadAllText(filePath); //Test data = JsonUtility.FromJson<Test>(jsonString); //string newData = JsonUtility.ToJson(data); //Debug.Log(newData);
+            
             meshObject = new GameObject("Terrain Chunk");
             meshRenderer = meshObject.AddComponent<MeshRenderer>();
-            meshFilter = meshObject.AddComponent<MeshFilter>();
+            meshFilter = meshObject.AddComponent<MeshFilter>( );
             meshRenderer.material = material;
-
             meshObject.transform.position = positionV3;
             meshObject.transform.parent = parent;
-            SetVisible(false);
+            
+          
+            //SetVisible(false);
 
             mapGenerator.RequestMapData(OnMapDataReceived);
         }
@@ -102,25 +145,52 @@ public class EndlessTerrain : MonoBehaviour
         void OnMeshDataReceived(MeshData meshData)
         {
             meshFilter.mesh = meshData.CreateMesh();
+           
         }
 
 
         public void UpdateTerrainChunk()
         {
-            float viewerDstFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPosition));
-            bool visible = viewerDstFromNearestEdge <= maxViewDst;
+            float viewerDstFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(viewerPos));
+            visible = viewerDstFromNearestEdge <= maxViewDst;
             SetVisible(visible);
+           
         }
 
         public void SetVisible(bool visible)
         {
-            meshObject.SetActive(visible);
+            if(!visible)
+            {
+                NotVisible();
+            }
+            else if (visible)
+            {
+               
+            }
         }
 
         public bool IsVisible()
         {
+          
             return meshObject.activeSelf;
+
+            
         }
+        public void NotVisible()
+        {
+             //Destroy(meshObject);
+            
+        }
+
+
+    }
+
+  [System.Serializable]
+    public class Test
+    {
+        public float coord;
+        int size;
+        int seed;
 
     }
 }
