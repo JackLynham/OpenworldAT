@@ -4,13 +4,14 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveSystem 
 {
-    public static void SaveData (EndlessTerrain endless)
+    public static void SaveData (Temp temp)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = Application.persistentDataPath + "/player.fun";
         FileStream stream = new FileStream(path, FileMode.Create);
 
-        DataManager data = new DataManager(endless);
+        //DataManager data = new DataManager(endless);
+        DataManager data = new DataManager(temp);
 
         formatter.Serialize(stream, data);
         stream.Close();

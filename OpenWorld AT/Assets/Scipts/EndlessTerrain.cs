@@ -25,7 +25,7 @@ public class EndlessTerrain : MonoBehaviour
     public TerrainChunk terrainChunk;
 
     Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
-    List<TerrainChunk> terrainChunksVisible = new List<TerrainChunk>();
+   public List<TerrainChunk> terrainChunksVisible = new List<TerrainChunk>();
 
     void Start()  /*Find the Map make Sure chunk size is not to Big, Calculate Chunk visibliity */
     {
@@ -41,12 +41,12 @@ public class EndlessTerrain : MonoBehaviour
       
     }
 
-   public void SaveData()
-    {
-        SaveSystem.SaveData(this);
-    }
+    //public void SaveData()
+    //{
+    //    SaveSystem.SaveData(this);
+    //}
 
-    public void LoadPlayer ()
+    public void LoadData()
     {
         DataManager data = SaveSystem.LoadData();
 
@@ -63,7 +63,7 @@ public class EndlessTerrain : MonoBehaviour
         for (int i = 0; i < terrainChunksVisible.Count; i++)
         {
             terrainChunksVisible[i].SetVisible(false);
-            SaveData();
+            //SaveData();
             
         }
 
@@ -79,7 +79,7 @@ public class EndlessTerrain : MonoBehaviour
             {
                 /* Determined whats chunk is being seen, if the chunk is inside the list call update chunks to update all chunks #
                  add viewed chunk to dictionairy , else add a new chunk to the list.*/
-                 viewedChunk = new Vector2(currentChunkX/* + xOffset*/, currentChunkY /*+ yOffset*/);
+                 viewedChunk = new Vector2(currentChunkX + xOffset, currentChunkY + yOffset);
                 
                 if (terrainChunkDictionary.ContainsKey(viewedChunk))
                 {
@@ -101,7 +101,7 @@ public class EndlessTerrain : MonoBehaviour
     }
 
 
-    public class TerrainChunk
+    public class TerrainChunk :MonoBehaviour
     {
 
         GameObject meshObject;
@@ -109,15 +109,17 @@ public class EndlessTerrain : MonoBehaviour
         Bounds bounds;
         MeshRenderer meshRenderer;
         MeshFilter meshFilter;
-       public bool visible;
+        public bool visible;
+        public bool active;
 
-        //string filePath;
-        //string jsonString;
+        // EndlessTerrain endless;
+       
 
+        
 
         public TerrainChunk(Vector2 coord, int size, Transform parent, Material material,  int chunkID)
         {
-            
+            EndlessTerrain endless = gameObject.GetComponent<EndlessTerrain>();
             position = coord * size;
             bounds = new Bounds(position, Vector2.one * size);
             Vector3 positionV3 = new Vector3(position.x, 0, position.y);
@@ -132,7 +134,7 @@ public class EndlessTerrain : MonoBehaviour
             meshObject.transform.parent = parent;
             
           
-            //SetVisible(false);
+            SetVisible(false);
 
             mapGenerator.RequestMapData(OnMapDataReceived);
         }
@@ -159,28 +161,39 @@ public class EndlessTerrain : MonoBehaviour
 
         public void SetVisible(bool visible)
         {
-            //if(!visible)
-            //{
-            //    NotVisible();
-            //}
-            //else if (visible)
-            //{
-               
-            //}
+             IsVisible();
+
+            if (!visible)
+            {
+                NotVisible();
+            }
+            else if (visible)
+            {
+                // Instantiate 
+                active = true;
+
+            }
         }
 
         public bool IsVisible()
         {
-          
-            return meshObject.activeSelf;
-
+            return true; 
+           // return meshObject.activeSelf;
+          //  return meshObject;
+           
             
         }
-        //public void NotVisible()
-        //{
-        //     Destroy(meshObject);
-            
-        //}
+
+        public void NotVisible()
+        {
+            if(active)
+            {
+             //   endless.terrainChunksVisible.Remove(meshObject.GetComponent<TerrainChunk>());
+               //Destroy(meshObject);
+            }
+           
+
+        }
 
 
     }
