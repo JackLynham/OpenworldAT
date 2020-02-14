@@ -22,7 +22,7 @@ public class EndlessTerrain : MonoBehaviour
     public int xOffset;
     public int yOffset;
 
-    public TerrainChunk terrainChunk;
+   // public TerrainChunk terrainChunk;
 
     Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
    public List<TerrainChunk> terrainChunksVisible = new List<TerrainChunk>();
@@ -177,9 +177,9 @@ public class EndlessTerrain : MonoBehaviour
 
         public bool IsVisible()
         {
-            return true; 
-           // return meshObject.activeSelf;
-          //  return meshObject;
+            //return true; 
+            return meshObject.activeSelf;
+           return meshObject;
            
             
         }
