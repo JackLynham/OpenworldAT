@@ -113,13 +113,16 @@ public class EndlessTerrain : MonoBehaviour
         public bool active;
 
         // EndlessTerrain endless;
-       
 
-        
+        private void Start()
+        {
+            active = true;
+        }
+
 
         public TerrainChunk(Vector2 coord, int size, Transform parent, Material material,  int chunkID)
         {
-            EndlessTerrain endless = gameObject.GetComponent<EndlessTerrain>();
+         
             position = coord * size;
             bounds = new Bounds(position, Vector2.one * size);
             Vector3 positionV3 = new Vector3(position.x, 0, position.y);
@@ -146,7 +149,11 @@ public class EndlessTerrain : MonoBehaviour
 
         void OnMeshDataReceived(MeshData meshData)
         {
-            meshFilter.mesh = meshData.CreateMesh();
+            if(active)
+            {
+                meshFilter.mesh = meshData.CreateMesh();
+            }
+           
            
         }
 
@@ -177,9 +184,9 @@ public class EndlessTerrain : MonoBehaviour
 
         public bool IsVisible()
         {
-            //return true; 
-            return meshObject.activeSelf;
-           return meshObject;
+            return true; 
+           // return meshObject;
+          // return meshObject;
            
             
         }
@@ -188,8 +195,10 @@ public class EndlessTerrain : MonoBehaviour
         {
             if(active)
             {
+               // meshFilter.mesh.Clear();
              //   endless.terrainChunksVisible.Remove(meshObject.GetComponent<TerrainChunk>());
-               //Destroy(meshObject);
+               Destroy(meshObject);
+                active = false;
             }
            
 
